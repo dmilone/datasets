@@ -1,3 +1,3 @@
 # datasets
 sharing data
-$`\sqrt{2}`$
+<img src="https://latex.codecogs.com/gif.latex?t_1 \>
