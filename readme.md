@@ -1,3 +1,3 @@
 # datasets
 sharing data
-$`\t_1`$
+$`\sqrt{2}`$
