@@ -9,7 +9,6 @@ from tqdm import tqdm
 ########################
 
 
-
 #===============================================================
 def build_pattern(name, sequence, real_base_pairs, Dmin=4, window=9):
 
@@ -91,13 +90,63 @@ def build_pattern(name, sequence, real_base_pairs, Dmin=4, window=9):
                    x=torch.Tensor(embedding),                  # REPRESENTACION ONE-HOT DE LOS nts
                    backbone=torch.Tensor(backbone),            # COMO SE CONECTAN LOS nts ENTRE ELLOS (SECUENCIA)
                    connections=connections,                    # POSIBLES CONEXIONES CANONICAS
-                   edge_index=torch.from_numpy(edge_index),    # CONEXIONES ENTRE LOS NODOS,  # CONEXIONES ENTRE LOS NODOS
-                   y = torch.tensor(y.T, dtype=torch.long))    # ENLACES VALIDOS ENTRE nts
+                   edge_index=torch.from_numpy(edge_index),    # CONEXIONES ENTRE LOS NODOS
+                   y=torch.tensor(y.T, dtype=torch.long))      # enlaces correctos (referencia)
         # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     return pattern
 #===============================================================
 
+#===============================================================
+def build_test_pattern(name, sequence, Dmin=4, window=9):
+
+    nts = ('A','U','C','G')
+
+    #------------------------
+    # SECUENCIA A EMBEDDING
+    # Cada nt es un one-hot
+    #------------------------
+    embedding = seq2embedding(sequence, nts=nts)
+
+    #-----------------------------
+    # GENERAR POSITIONAL EMCODING
+    #-----------------------------
+    #positional_embedding = getPositionEncoding(seq_len=len(sequence), d=len(nts), n=100)  # Mismo tamaño que las features??
+
+    #----------------------------------------
+    # SUMAR POSITIONAL ENCODING AL EMBEDDING
+    #----------------------------------------
+
+    #-----------------------------
+    # IDENTIFICAR POSIBLES ENLACES (GC, AU, GU)
+    #-----------------------------
+    backbone = get_backbone(sequence)
+
+    connections, strength = get_connections(sequence, pairings=[('G','C'),('A','U'), ('G','U')], Dmin=4)
+    connections = np.array(connections)
+    
+    target = backbone[1][:]
+    target.extend(connections[1])
+    source = backbone[0][:]
+    source.extend(connections[0])
+    edge_index = np.array([target,source])  # INCLUYE LA ESTRUCTURA DE UNION ENTRE nts
+
+    # edge_index = np.array(connections)  # SOLO CANONICAS
+
+    #-----------------------------
+    # CONSTRUIR PATRON
+    #-----------------------------
+    pattern = Data(name=name,                                  # CODIGO IDENTIFICADOR DE LA SECUENCIA
+                   seq=sequence,                               # SECUENCIA DE nts
+                   family=name.split('_')[0],                  # FAMILIA DE LA SECUENCIA
+                   x=torch.Tensor(embedding),                  # REPRESENTACION ONE-HOT DE LOS nts
+                   backbone=torch.Tensor(backbone),            # COMO SE CONECTAN LOS nts ENTRE ELLOS (SECUENCIA)
+                   connections=connections,                    # POSIBLES CONEXIONES CANONICAS
+                   edge_index=torch.from_numpy(edge_index))    # CONEXIONES ENTRE LOS NODOS
+        # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+    return pattern
+#===============================================================
 
 
 #===============================================================
