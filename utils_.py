@@ -78,7 +78,7 @@ def build_pattern(name, sequence, real_base_pairs, Dmin=4, window=9):
         # else:
         #     print(f'{name}, {sequence} -- BP: {sequence[int(bp[0])]} ({bp[0]}) - {sequence[int(bp[1])]} ({bp[1]}), {name}')
 
-    #y *= np.array(strength)
+    y *= np.array(strength)
 
 
     #-----------------------------
@@ -91,7 +91,7 @@ def build_pattern(name, sequence, real_base_pairs, Dmin=4, window=9):
                    backbone=torch.Tensor(backbone),            # COMO SE CONECTAN LOS nts ENTRE ELLOS (SECUENCIA)
                    connections=connections,                    # POSIBLES CONEXIONES CANONICAS
                    edge_index=torch.from_numpy(edge_index),    # CONEXIONES ENTRE LOS NODOS
-                   y=torch.tensor(y.T, dtype=torch.float32))      # enlaces correctos (referencia)
+                   y=torch.tensor(y.T, dtype=torch.long))      # enlaces correctos (referencia)
         # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     return pattern
