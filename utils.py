@@ -40,7 +40,7 @@ def build_pattern(name, sequence, real_base_pairs, Dmin=4, window=9):
     #-----------------------------
     backbone = get_backbone(sequence)
 
-    connections, strength = get_connections(sequence, pairings=[('G','C'),('A','U'), ('G','U')], Dmin=4)
+    connections, strength = get_connections2(sequence, pairings=[('G','C'),('A','U'), ('G','U')], Dmin=4)
 
     target = backbone[1][:]
     target.extend(connections[1])
@@ -122,7 +122,7 @@ def build_test_pattern(name, sequence, Dmin=4, window=9):
     #-----------------------------
     backbone = get_backbone(sequence)
 
-    connections, strength = get_connections(sequence, pairings=[('G','C'),('A','U'), ('G','U')], Dmin=4)
+    connections, strength = get_connections2(sequence, pairings=[('G','C'),('A','U'), ('G','U')], Dmin=4)
     connections = np.array(connections)
     
     target = backbone[1][:]
@@ -247,6 +247,26 @@ def get_connections(sequence, pairings=[('G','C'),('A','U'), ('G','U')], Dmin=4)
     return connections, strength
 #===============================================================
 
+def get_connections2(sequence, pairings=[('G','C'),('A','U'), ('G','U')], Dmin=4):
+    c_list = []
+    s_list = []
+    for i in range(len(sequence)):
+        for j in range(i+Dmin, len(sequence)):
+            if (sequence[i] == 'G' and sequence[j] == 'C') or (sequence[i] == 'C' and sequence[j] == 'G'):
+                c_list.append([i,j])
+                s_list.append(3.0)
+            elif (sequence[i] == 'A' and sequence[j] == 'U') or (sequence[i] == 'U' and sequence[j] == 'A'):
+                c_list.append([i,j])
+                s_list.append(2.0)
+            elif (sequence[i] == 'G' and sequence[j] == 'U') or (sequence[i] == 'U' and sequence[j] == 'G'):
+                c_list.append([i,j])
+                s_list.append(0.8)
+    
+    connections = np.array(c_list).T
+    strength = np.array(s_list)
+
+    return connections, strength
+    
 #####################################################################################
 
 #===============================================================
